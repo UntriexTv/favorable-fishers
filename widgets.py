@@ -1,7 +1,3 @@
-from rich.console import Console
-from rich.layout import Layout
-from rich.live import Live
-from time import sleep
 from rich.table import Table
 import random
 

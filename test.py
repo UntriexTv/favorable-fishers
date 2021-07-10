@@ -1,5 +1,7 @@
-from rich.markdown import Markdown
+import time
 
+from rich.markdown import Markdown
+from rich.console import Console
 from textual import events
 from textual.app import App
 from textual.view import DockView
@@ -8,32 +10,44 @@ from widgets import *
 
 
 class MyApp(App):
-    """An example of a very simple Textual App"""
-
     async def on_load(self, event: events.Load) -> None:
         await self.bind("q,ctrl+c", "quit")
-        await self.bind("b", "view.toggle('sidebar')")
+        await self.bind("v", "view.toggle('sidebar_l')")
+        await self.bind("b", "view.toggle('sidebar_r')")
+        await self.bind("ctrl+v", "change_l('test')")
+        await self.bind("ctrl+b", "view.toggle('sidebar_r')")
+
+    async def change_l(self, test):
+        print(test)
+        self.sidebar_l.renderable = "name"
+        self.sidebar_l.require_repaint()
+
+    async def change_r(self):
+        pass
 
     async def on_startup(self, event: events.Startup) -> None:
         view = await self.push_view(DockView())
         header = Header(self.title)
         footer = Footer()
-        sidebar = Placeholder(name="sidebar")
+        self.sidebar_l = Static("test", name="sidebar_l")
+        self.sidebar_r = Placeholder(name="sidebar_r")
         self.table = TestingWidget("console")
 
-        self.body = Static(self.table.run)
+        self.body = Static(self.table.run())
 
         footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")
 
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
-        await view.dock(sidebar, edge="left", size=30)
+        await view.dock(self.sidebar_l, edge="left", size=30)
+        await view.dock(self.sidebar_r, edge="right", size=30)
         await view.dock(self.body, edge="right")
         self.require_layout()
 
     async def on_timer(self, event: events.Timer) -> None:
-        self.body.re
+        self.body.renderable = self.table.run()
+        # self.body.require_repaint()
 
 
 app = MyApp(title="Simple App")
