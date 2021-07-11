@@ -3,25 +3,15 @@
 from rich.layout import Layout
 from rich.console import Console
 from rich.live import Live
-from rich.table import Table
 
 from time import sleep
-import random
+import sys
 
-def generate_table() -> Table:
-    """Make a new table."""
-    table = Table()
-    table.add_column("ID")
-    table.add_column("Value")
-    table.add_column("Status")
+sys.path.insert(0, './Widgets')
 
-    for row in range(random.randint(2, 6)):
-        value = random.random() * 100
-        table.add_row(
-            f"{row}", f"{value:3.2f}", "[red]ERROR" if value < 50 else "[green]SUCCESS"
-        )
-    return table
-
+from table import *
+from weather import *
+from covid import *
 
 def make_grid():
 	layout = Layout(name='Dashboard')
@@ -53,8 +43,11 @@ def make_grid():
 
 
 def update_grid():
+	with open('settings.json') as json_file:
+		data = json.load(json_file)
+
 	#layout['top left'].update()
-	#layout['middle left'].update()
+	layout['middle left'].update(make_covid_table())
 	#layout['bottom left'].update()
 
 	#layout['top middle'].update()
@@ -62,8 +55,9 @@ def update_grid():
 	#layout['bottom middle'].update()
 
 	#layout['top right'].update()
-	layout['middle right'].update(generate_table())
+	layout['middle right'].update(generate_table()) 
 	#layout['bottom right'].update()
+	exec('')
 
 layout = make_grid()
 update_grid()
