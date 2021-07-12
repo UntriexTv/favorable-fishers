@@ -1,12 +1,28 @@
 from rich.table import Table
 import random
+from rich.panel import Panel
+from rich import box
+from rich.align import Align
+
+class TestingPanel:
+    def setup(self):
+        pass
+    def run(self, widget):
+        return Panel(
+                    Align.center(
+                        "Hello", vertical="middle"
+                    ),
+                    title="Testing Panel",
+                    border_style="green" if widget.has_focus else "blue",
+                    box=box.HEAVY if widget.mouse_over else box.ROUNDED
+                    )
 
 
 class TestingWidget:
     def setup(self):
         pass
 
-    def run(self):
+    def run(self, widget):
         """Make a new table."""
         table = Table(expand=True)
         table.add_column("ID")
@@ -18,7 +34,12 @@ class TestingWidget:
             table.add_row(
                 f"{row}", f"{value:3.2f}", "[red]ERROR" if value < 50 else "[green]SUCCESS"
             )
-        return table
+        return Panel(
+            table,
+            title="Testing Panel",
+            border_style="green" if widget.has_focus else "blue",
+            box=box.HEAVY if widget.mouse_over else box.ROUNDED
+        )
 
 
 class AboutWidget:
@@ -32,7 +53,7 @@ class AboutWidget:
             {"name": "kedi hacker", "git": "place_holder"}
         ]
 
-    def run(self):
+    def run(self, widget):
         """Make a new table."""
 
         table = Table.grid(expand=True)
@@ -44,7 +65,12 @@ class AboutWidget:
             )
         table.add_row("")
         table.add_row("[red]For SummerCodeJam[/red] [bold green]2021[/bold green]")
-        return table
+        return Panel(
+            table,
+            title="Testing Panel",
+            border_style="green" if widget.has_focus else "blue",
+            box=box.HEAVY if widget.mouse_over else box.ROUNDED
+        )
 
 
 widgets = [TestingWidget]

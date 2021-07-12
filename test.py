@@ -14,24 +14,30 @@ from widgets import *
 class MyApp(App):
     async def on_load(self, event: events.Load) -> None:
         await self.bind("q,ctrl+c", "quit")
-        await self.bind("v", "view.toggle('sidebar_l')")
         await self.bind("b", "view.toggle('sidebar_r')")
-        await self.bind("ctrl+v", "change_l('test')")
-        await self.bind("ctrl+b", "view.toggle('sidebar_r')")
+        await self.bind("v", "changel", "Testing")
+        self.press = 0
 
-    async def change_l(self, test):
-        print(test)
-        self.sidebar_l.renderable = "name"
-        self.sidebar_l.require_repaint()
+    async def action_changel(self):
+        await self.body.update("hii")
+
+    async def on_key(self, event: events.Key) -> None:
+        try:
+            await self.body.update(str(self.press))
+            self.press += 1
+        except:
+            pass
+
 
     async def change_r(self):
         pass
 
     async def on_startup(self, event: events.Startup) -> None:
         view = await self.push_view(DockView())
-        header = Header("")
+        header = Header()
         footer = Footer()
-        self.sidebar_l = ScrollView("test", name="sidebar_l")
+        self.sidebar_l = Static("test", name="sidebar_l")
+        self.sidebar_l_l = Static("test2", name="sidebar_l_l")
         self.sidebar_r = Placeholder(name="sidebar_r")
         self.table = AboutWidget()
         self.body = Static(self.table.run())
@@ -42,13 +48,13 @@ class MyApp(App):
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar_l, edge="left", size=30)
-        await view.dock(self.sidebar_r, edge="right", size=30)
+        await view.dock(self.sidebar_l_l, edge="left", size=30)
+        await view.dock(self.sidebar_r, edge="bottom")
         await view.dock(self.body, edge="right")
         self.require_layout()
 
-    async def on_timer(self, event: events.Timer) -> None:
-        self.body.renderable = self.table.run()
-        self.body.require_repaint()
+    #async def on_timer(self, event: events.Timer) -> None:
+    #    await self.body.update(self.table.run())
 
 
 app = MyApp(title="Simple App")
