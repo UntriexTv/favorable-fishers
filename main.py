@@ -1,12 +1,11 @@
 from asciimatics.screen import Screen
 from asciimatics.scene import Scene
-from APImanager import APImanager
+from WidgetManager import WidgetManager
 from Dashboard import Dashboard
 from APIWidgets.Placeholder import Placeholder
 
 from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import sys
-
 
 
 
@@ -21,7 +20,7 @@ def app(screen, scene):
 
 
 
-apiManager = APImanager()
+widgetmanager = WidgetManager()
 last_scene = None
 while True:
     try:

@@ -1,0 +1,25 @@
+class main
+	+play
+
+class WidgetManager
+	+getDetailView
+	+getTile
+	+addAPIWidget
+	+delAPIWidget
+	+updateAPI
+
+class dashboard(Frame*)
+	-WidgetManager
+
+class APIWidget()
+	-Frame*    tile for dashboard
+    -Frame*    detailview 
+	-updateInterval
+	+refreshData
+	
+class DataFetcher
+
+
+- class variable
++ method
+* class in asciimatics
