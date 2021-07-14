@@ -29,7 +29,6 @@ class covidView(Frame):
         if self.settings_open == True:
             layout.add_widget(Text('Country:', 'country'))
 
-
         # creating the bottom bar of widgets
         buttonBar = Layout([1, 1, 1, 1, 1])
         self.add_layout(buttonBar)
