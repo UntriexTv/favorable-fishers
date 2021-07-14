@@ -13,9 +13,9 @@ def app(screen, scene):
     scenes = [
         #Scene([Dashboard(screen, apiManager)], -1, name="Dashboard"),
        # Scene([Placeholder(screen, apiManager)], -1, name="APIWidget")
-	   Dashboard(screen)
+	   Dashboard(screen, widgetmanager)
     ]
-    print(scenes)
+
     screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True) 
 
 

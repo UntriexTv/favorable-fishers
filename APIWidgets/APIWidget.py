@@ -2,13 +2,14 @@ from asciimatics.widgets import Frame
 import  APImanager 
 import json
 
-class AIPWidget():
+class APIWidget():
     # self.tile = Frame()
     # self.detailView = Frame()
     # self.data = json
 
     def __init__(self, api):
-        
+        self.height = 15
+        self.width = 50
         self.data = APImanager.callAPI("test")
 
 

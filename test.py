@@ -1,3 +1,5 @@
+from asciimatics.renderers import Box
+from asciimatics.effects import Background, Clock, Cog, Print
 from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
     Button, TextBox, Widget
 from asciimatics.scene import Scene
@@ -41,18 +43,18 @@ class testView(Frame):
 def demo(screen, scene):
 
     
-    #=================
-    # for dashboard with multiple tile-frames
-    # set frame size
-    height = 15
-    width = 50
-    scenes = [
+    # #=================
+    # # for dashboard with multiple tile-frames
+    # # set frame size
+    # height = 15
+    # width = 50
+    # scenes = [
         
-        Scene([testView(screen,height,width,0,0),testView(screen,height,width,1,1),testView(screen,height,width,2,0),testView(screen,height,width,3,1)
-        #,testView(screen,0,2),testView(screen,2,2)
-             ] ,   -1, name="Main"),
+    #     Scene([testView(screen,height,width,0,0),testView(screen,height,width,1,1),testView(screen,height,width,2,0),testView(screen,height,width,3,1)
+    #     #,testView(screen,0,2),testView(screen,2,2)
+    #          ] ,   -1, name="Main"),
         
-    ]
+    # ]
 
     #================
     # for detailView
@@ -64,7 +66,12 @@ def demo(screen, scene):
         
     # ]
 
-    screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True)
+    #screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True)
+
+    fr = Frame(screen,20,20,x=0,y=0 )
+
+
+    screen.play([Scene([Background(screen, 1), Print(screen,Box(10,10),3)])])
 
 
 
