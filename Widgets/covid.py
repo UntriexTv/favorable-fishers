@@ -17,6 +17,7 @@ class covidView(Frame):
         self.add_layout(layout)
         self.json_data = self.fetch_data()
 
+        # add all the labels
         layout.add_widget(Label('Country:   ' + str(self.json_data['Country'])))
         layout.add_widget(Label('Confirmed: ' + str(self.json_data['Confirmed'])))
         layout.add_widget(Label('Deaths:    ' + str(self.json['Deaths'])))
@@ -24,6 +25,7 @@ class covidView(Frame):
         layout.add_widget(Label('Active:    ' + str(self.json_data['Active'])))
         layout.add_widget(Label('Date:      ' + str(self.json_data['Date'])))
 
+        # creating the bottom bar of widgets
         buttonBar = Layout([1, 1, 1, 1, 1])
         self.add_layout(buttonBar)
         buttonBar.add_widget(Button('Config', self._config, None), 1)
@@ -37,24 +39,26 @@ class covidView(Frame):
     @staticmethod
     def _config():
         # this function is to configure the widget i.e. change the country 
+        # not done yet obvs
         pass
 
     def fetch_data(self):
+        # getting the json data from the covid api and return the latest data point
         url = 'https://api.covid19api.com/live/country/united-kingdom/status/confirmed'
-
         payload = {}
         headers = {}
-
         response = requests.request('GET', url, headers=headers, data=payload)
-
         data = response.json()
 
         return data[len(data)-1]
 
+'''
 def demo(screen, scene):
-
+    # define the size of each frame
     height = 15
     width = 50
+
+    # make all the scenes
     scenes = [
         Scene([
             covidView(screen, height, width, 0, 0), 
@@ -64,8 +68,8 @@ def demo(screen, scene):
             ], -1, name='Main'),
     ]
 
+    # running all the scenes
     screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True)
-
 
 
 last_scene = None
@@ -75,7 +79,7 @@ while True:
         sys.exit(0)
     except ResizeScreenError as e:
         last_scene = e.scene
-
+'''
 
 
 
