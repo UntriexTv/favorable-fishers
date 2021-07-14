@@ -7,6 +7,7 @@ import requests
 import requests
 import json
 
+
 class covidView(Frame):
     def __init__(self, screen, height, width, x, y, can_scroll=False):
         super(covidView, self).__init__(screen, height, width, x=x, y=y, can_scroll=can_scroll)
@@ -30,7 +31,7 @@ class covidView(Frame):
             layout.add_widget(Text('Country:', 'country'))
 
         # creating the bottom bar of widgets
-        buttonBar = Layout([1, 1, 1, 1, 1])
+        buttonBar = Layout([1, 1])
         self.add_layout(buttonBar)
         buttonBar.add_widget(Button('Config', self._config, None), 1)
         buttonBar.add_widget(Button('Quit', self._quit, None), 3)
