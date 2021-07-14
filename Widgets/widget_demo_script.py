@@ -1,3 +1,12 @@
+from asciimatics.scene import Scene
+from asciimatics.screen import Screen
+from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
+import sys
+from covid import *
+from calculator import *
+from weather import *
+
+
 def demo(screen, scene):
     # define the size of each frame
     height = 15
