@@ -1,3 +1,6 @@
+import threading
+import time
+
 from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
     Button, TextBox, Widget, Label
 from asciimatics.scene import Scene
@@ -7,29 +10,34 @@ from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import sys
 
 
-class Commands():
+class Data:
     def __init__(self):
-        self.commands = {"commands": "", "result": ""}
+        self.data = {}  # saved data
+        self.update = []  # list of {"api": x, "data": y}
 
-    def addCommand(self, cmd):
-        if cmd == "b":
-            self.commands["commands"] = self.commands["commands"][:-1]
-        elif cmd =="c":
-            self.commands["commands"] = ""
-        else:
-            self.commands["commands"] += cmd
+    def save_data(self, data_place, data):
+        self.data[data_place] = data
 
-    def getCommands(self):
+    def new_update(self, data_: str, api: str):
+        self.data[data_] = "test"
+        self.update.append({"api": api, "data": data_})
+
+    def update_loop(self):  # is running on background and downloading data from provided api
+        while True:
+            for req in self.update:
+                self.data[req["data"]] = requests.request("GET", req["api"])
+                time.sleep(0.5)
+
+    def get_data(self, data_: str):
         try:
-            exec(f"""self.commands["result"] = str({self.commands["commands"]})""")
-        except:
-            self.commands["result"] = ""
-        return self.commands
+            return self.data[data_]
+        except KeyError:
+            return ""
 
 
-class calculatorView(Frame):
+class testView(Frame):
     def __init__(self, screen, height, width, comm, x1=0, y1=0):
-        super(calculatorView, self).__init__(screen,
+        super(testView, self).__init__(screen,
                                        height,
                                        width,
                                        hover_focus=True,
@@ -46,10 +54,11 @@ class calculatorView(Frame):
         #  def draw(self):
         #  self.palette = {"attribute":(1,2,3)}
         # Create the form for displaying the list of contacts.
-        layout_result = Layout([2])
-        self.add_layout(layout_result)
-        layout_result.add_widget(Text("Command: ", name="commands", validator=self.validateCommand))
-        layout_result.add_widget(Text("Result: ", name="result", readonly=True))
+        self.cmd.save_data("commands", "")
+        self.layout_result = Layout([2])
+        self.add_layout(self.layout_result)
+        self.layout_result.add_widget(Text("Command: ", name="commands", validator=self.validateCommand))
+        self.layout_result.add_widget(Text("Result: ", name="result", readonly=True))
 
         layout = Layout([5, 5, 5, 5], fill_frame=True)
         self.add_layout(layout)
@@ -80,21 +89,59 @@ class calculatorView(Frame):
     def validateCommand(self, data):
         test = ''.join("" if c.isdigit() or c in ["/", "*", "-", "+", ".", "(", ")"] else c for c in data)
         if not test:
-            self.cmd.commands["commands"] = data
+            self.cmd.data["commands"] = data
+        else:
+            return False
         if data:
             self.reset()
         return True
 
     def _update(self, frame_no):
-        super(calculatorView, self)._update(frame_no)
+        super(testView, self)._update(frame_no)
 
     def reset(self):
-        self.data = self.cmd.getCommands()
+        self.data = {"commands": self.cmd.get_data("commands")}
+        try:
+            exec(f"""self.data["result"] = str({self.data["commands"]})""")
+        except:
+            self.data["result"] = ""
 
     def calculator(self, new=None):
-        self.cmd.addCommand(new)
+        if new == "b":
+            self.data["commands"] = self.data["commands"][:-1]
+        elif new =="c":
+            self.data["commands"] = ""
+        else:
+            self.data["commands"] += new
+        try:
+            self.cmd.save_data("commands", self.data["commands"])
+        except KeyError:
+            self.cmd.save_data("commands", new)
         self.reset()
 
     @staticmethod
     def _quit():
         raise StopApplication("User pressed quit")
+
+
+cmd = Data()
+t1 = threading.Thread(target=cmd.update_loop, daemon=True)
+t1.start()
+
+
+def demo(screen, scene):
+    height = screen.height  # // 2
+    width = screen.width  # // 2
+    cmd.__init__()
+    scenes = [Scene([testView(screen, height, width, cmd)], -1, name="Main"), ]
+
+    screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True)
+
+
+last_scene = None
+while True:
+    try:
+        Screen.wrapper(demo, catch_interrupt=True, arguments=[last_scene])
+        sys.exit(0)
+    except ResizeScreenError as e:
+        last_scene = e.scene
