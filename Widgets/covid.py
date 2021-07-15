@@ -4,7 +4,6 @@ from asciimatics.screen import Screen
 from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import sys
 import requests
-import requests
 import json
 
 
