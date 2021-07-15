@@ -85,22 +85,29 @@ class Dashboard(Scene):
         widgetID = self.menuFrame.data["WidgetList"]
 
 
-        q =  testView(self.screen,15,50)
-        self.newtile.append(q )
+        # q =  testView(self.screen,15,50)
+        # self.newtile.append(q )
 
-        newtileIndex = len(self.effects)-1
+        # newtileIndex = len(self.effects)-1
         
-        tilesPerRow = self.screen.width // TILE_WIDTH
-        x_off = newtileIndex%tilesPerRow
-        y_off = newtileIndex//tilesPerRow
-        # self.placeTile(self.widgetmanager.getTile(newtileIndex-1), x_off*50, y_off*15)
-        self.placeTile(q,x_off*50, y_off*15)#, x_off*50, y_off*15)
-
-        # first a test instance
-        # newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen)
         # tilesPerRow = self.screen.width // TILE_WIDTH
         # x_off = newtileIndex%tilesPerRow
         # y_off = newtileIndex//tilesPerRow
+        
+        # self.placeTile(q,x_off*50, y_off*15)#, x_off*50, y_off*15)
+
+        # first a test instance
+        newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen)
+       
+        
+        tilesPerRow = self.screen.width // TILE_WIDTH
+        # x_off = newtileIndex%tilesPerRow
+        # y_off = newtileIndex//tilesPerRow
+
+        t = self.widgetmanager.getTile(self.screen)
+        
+        self.placeTile(t, 1*50, 0*15)
+
         # self.placeTile(self.widgetmanager.getTile(newtileIndex-1), x_off*50, y_off*15)
 
 

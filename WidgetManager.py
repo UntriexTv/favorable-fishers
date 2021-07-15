@@ -2,6 +2,7 @@
 
 
 from APIWidgets.BoredAPI import BoredAPI
+from testwid import testView
 
 
 class WidgetManager:
@@ -13,14 +14,21 @@ class WidgetManager:
         pass
 
     def getTile(self,id):
-        return self.widgets[id].Tile
+        #return self.widgets[id].Tile
+        # return self.widgets[id]
+        raise ValueError("het is" + str(self.widgets))
+        return self.widgets[0].Tile
 
     def getDashboard(self):
         return [widget.Tile for widget in self.widgets ]
 
     def addAPIWidget(self, widgetID, screen):
+        fr = BoredAPI(screen,"BoredAPI")
+        #fr = testView(screen,15,50)
+        self.widgets.append(fr)
         
-        self.widgets.append(BoredAPI(screen,"BoredAPI"))
+        # fr = testView(screen,15,50,len(self.widgets))
+        # self.widgets.append(fr)
         return len(self.widgets)
 
 
