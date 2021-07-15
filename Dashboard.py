@@ -1,4 +1,6 @@
 
+from testwid import testView
+from APIWidgets.BoredAPI import BoredAPI
 from asciimatics.effects import Background
 from asciimatics.exceptions import StopApplication
 from asciimatics.scene import Scene
@@ -6,12 +8,16 @@ from asciimatics.scene import Scene
 from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
     Button, TextBox, Widget, Label
 
+
+TILE_WIDTH = 50
+TILE_HEIGHT = 15
+
 class Dashboard(Scene):
     def __init__(self, screen, widgetman):
         self.screen = screen
         self.widgetmanager = widgetman
       #  dash = self.generateDashboard()
-
+        self.newtile = []
         super(Dashboard,self).__init__(self.generateInterface(), name="dashboard")
 
     # def addTile(self,tileFrame):
@@ -29,25 +35,20 @@ class Dashboard(Scene):
           #  on_change=self._on_pick,
             on_select=self._on_select)#_addAPIWidget)
         
-        menuFrame = Frame(self.screen,20,20)
-
-
-        
+        self.menuFrame = Frame(self.screen,20,20)
         layout = Layout([1], fill_frame=True)
-        menuFrame.add_layout(layout)
+        self.menuFrame.add_layout(layout)
         layout.add_widget(self._widget_list_view)
         layout.add_widget(Divider())
 
         closeMenuBtn = Layout([1])
-        menuFrame.add_layout(closeMenuBtn)
+        self.menuFrame.add_layout(closeMenuBtn)
         closeMenuBtn.add_widget(Button("Cancel", self._cancel,None))
+        self.menuFrame.fix()
 
-        
-  
+        self.add_effect(self.menuFrame)
 
-        menuFrame.fix()
-
-        self.add_effect(menuFrame)
+        self.displayDashboard()
         pass
 
     @staticmethod
@@ -57,23 +58,55 @@ class Dashboard(Scene):
 
     def displayDashboard(self):
         #get all tiles
-        widgetTiles = self.widgetmanager.getActiveTiles()
+        self.widgetTiles = self.widgetmanager.getDashboard()
 
-    def _cancel(self):
-        self.remove_effect()
+        tilesPerRow = self.screen.width // TILE_WIDTH
+        for index, widget in enumerate(self.widgetTiles):
+            widget.move(  (index%tilesPerRow ) * TILE_WIDTH,    (index // tilesPerRow) *TILE_HEIGHT   )
+            self.add_effect(widget)
+
+    def placeTile(self, tile, x_offset, y_offset):
+        #tile._canvas.move(x_offset,y_offset)
+        tile._canvas._dx = x_offset
+        tile._canvas._dy = y_offset
+        self.add_effect(tile)
+        
 
     # close widget menu
-    def remove_effect(self):
-        #super().remove_effect(super().effects[-1])
+    def _cancel(self):
         self.remove_effect(self.effects[-1])
 
+#for widget in self.widgetTiles:
+
     def _on_select(self):
-        widgetID = self.data["WidgetList"]
-        self.widgetmanager.addAPIWidget(widgetID, self.screen)
+        # pass
+        self.remove_effect(self.effects[-1])
+        self.menuFrame.save()
+        widgetID = self.menuFrame.data["WidgetList"]
+
+
+        q =  testView(self.screen,15,50)
+        self.newtile.append(q )
+
+        newtileIndex = len(self.effects)-1
+        
+        tilesPerRow = self.screen.width // TILE_WIDTH
+        x_off = newtileIndex%tilesPerRow
+        y_off = newtileIndex//tilesPerRow
+        # self.placeTile(self.widgetmanager.getTile(newtileIndex-1), x_off*50, y_off*15)
+        self.placeTile(q,x_off*50, y_off*15)#, x_off*50, y_off*15)
+
+        # first a test instance
+        # newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen)
+        # tilesPerRow = self.screen.width // TILE_WIDTH
+        # x_off = newtileIndex%tilesPerRow
+        # y_off = newtileIndex//tilesPerRow
+        # self.placeTile(self.widgetmanager.getTile(newtileIndex-1), x_off*50, y_off*15)
+
 
     def generateInterface(self):
         # basic interface
-        interface = Frame(self.screen, 3,50,x=0,y=0)
+        interface = Frame(self.screen, 35,50,x=0,y=0)
         layout = Layout([1,1])
         interface.add_layout(layout)
         layout.add_widget(Button("Add Widget",self._add_widget,None),0)
