@@ -11,17 +11,19 @@ from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
 
 TILE_WIDTH = 50
 TILE_HEIGHT = 15
+TOOLBAR_OFFSET = 3
 
 class Dashboard(Scene):
     def __init__(self, screen, widgetman):
         self.screen = screen
         self.widgetmanager = widgetman
-      #  dash = self.generateDashboard()
-        self.newtile = []
-        super(Dashboard,self).__init__(self.generateInterface(), name="dashboard")
+        menu = self.generateInterface()
+        super(Dashboard,self).__init__(menu, name="dashboard")
 
-    # def addTile(self,tileFrame):
-    #     self.tiles.append(tileFrame)
+        # after resize / reload: place widget on current screen
+        if len(self.widgetmanager.widgets) > 0:
+            self.widgetmanager.update_screen(screen)
+            self.displayDashboard()
 
 
     # open widget menu
@@ -34,7 +36,7 @@ class Dashboard(Scene):
             add_scroll_bar=True,
           #  on_change=self._on_pick,
             on_select=self._on_select)#_addAPIWidget)
-        
+
         self.menuFrame = Frame(self.screen,20,20)
         layout = Layout([1], fill_frame=True)
         self.menuFrame.add_layout(layout)
@@ -48,96 +50,52 @@ class Dashboard(Scene):
 
         self.add_effect(self.menuFrame)
 
-        self.displayDashboard()
-        pass
 
     @staticmethod
     def _quit():
         raise StopApplication("User pressed quit")
 
-
+    # get and place all tiles on dashboard
     def displayDashboard(self):
-        #get all tiles
-        self.widgetTiles = self.widgetmanager.getDashboard()
+        allTiles = self.widgetmanager.getDashboard()
+        for index, widget in enumerate(allTiles):
+            self.placeTile( widget, index)
 
+
+    # adds tile to scene, with x/y offset, so it gets drawn
+    def placeTile(self, tile, tileIndex):
         tilesPerRow = self.screen.width // TILE_WIDTH
-        for index, widget in enumerate(self.widgetTiles):
-            widget.move(  (index%tilesPerRow ) * TILE_WIDTH,    (index // tilesPerRow) *TILE_HEIGHT   )
-            self.add_effect(widget)
-
-    def placeTile(self, tile, x_offset, y_offset):
-        #tile._canvas.move(x_offset,y_offset)
-        tile._canvas._dx = x_offset
-        tile._canvas._dy = y_offset
+        remaining_space = self.screen.width % TILE_WIDTH
+        padding = (remaining_space // (tilesPerRow+1))
+        x_pos = tileIndex % tilesPerRow
+        y_pos = tileIndex // tilesPerRow
+        tile._canvas._dx = x_pos * TILE_WIDTH + (padding * (x_pos+1))# + middeling //2
+        tile._canvas._dy = ( y_pos * TILE_HEIGHT ) + TOOLBAR_OFFSET + (y_pos+1)
         self.add_effect(tile)
-        
+
 
     # close widget menu
     def _cancel(self):
         self.remove_effect(self.effects[-1])
 
-#for widget in self.widgetTiles:
 
+    # removes widget menu, adds new widget to manager
     def _on_select(self):
-        # pass
-        self.remove_effect(self.effects[-1])
+        self._cancel()
         self.menuFrame.save()
         widgetID = self.menuFrame.data["WidgetList"]
-
-
-        # q =  testView(self.screen,15,50)
-        # self.newtile.append(q )
-
-        # newtileIndex = len(self.effects)-1
-        
-        # tilesPerRow = self.screen.width // TILE_WIDTH
-        # x_off = newtileIndex%tilesPerRow
-        # y_off = newtileIndex//tilesPerRow
-        
-        # self.placeTile(q,x_off*50, y_off*15)#, x_off*50, y_off*15)
-
-        # first a test instance
         newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen)
-       
-        
-        tilesPerRow = self.screen.width // TILE_WIDTH
-        # x_off = newtileIndex%tilesPerRow
-        # y_off = newtileIndex//tilesPerRow
-
-        t = self.widgetmanager.getTile(self.screen)
-        
-        self.placeTile(t, 1*50, 0*15)
-
-        # self.placeTile(self.widgetmanager.getTile(newtileIndex-1), x_off*50, y_off*15)
+        tile = self.widgetmanager.getTile(newtileIndex)
+        self.placeTile(tile, newtileIndex)
 
 
+    # create menu
     def generateInterface(self):
-        # basic interface
-        interface = Frame(self.screen, 35,50,x=0,y=0)
+        interface = Frame(self.screen, TOOLBAR_OFFSET,self.screen.width,x=0,y=0)
         layout = Layout([1,1])
         interface.add_layout(layout)
         layout.add_widget(Button("Add Widget",self._add_widget,None),0)
         layout.add_widget(Button("Quit",self._quit,None),1)
         interface.fix()
 
-        return [Background(self.screen),interface] 
-
-
-
-    #TMP
-    def generateDashboard(self):
-        #mainFrame = Frame(self.screen,width=1920, height=1080)
-        mainFrame = Frame(self.screen,width=800//2, height=600//2, x=0, y=0)
-        layout = Layout([1])
-        mainFrame.add_layout(layout)
-        layout.add_widget(Label("one"))
-        mainFrame.fix()
-        
-        mainFrame2 = Frame(self.screen,width=800//2, height=600//2, x=50, y=0)
-        layout = Layout([1])
-        mainFrame2.add_layout(layout)
-        layout.add_widget(Label("two"))
-        mainFrame2.fix()
-
-
-        return [mainFrame, mainFrame2]
+        return [Background(self.screen),interface]

@@ -17,10 +17,11 @@ class BoredAPI(APIWidget):
 
     def createTile(self):
         tile = Frame(self.screen,15,50)#super().height,super().width)
-        tile.add_effect(Background(self.screen,4))
+        #tile.add_effect(Background(self.screen,4))
         layout = Layout([1])
         tile.add_layout(layout)
         layout.add_widget(Label(self.apiData))
+        tile.fix()
         return tile
 
     def apiCall(self):
@@ -29,6 +30,4 @@ class BoredAPI(APIWidget):
         #print(response.json()["activity"])
         return response.json()["activity"]
 
-    def move(self,x,y):
-        super().move(x,y)
         

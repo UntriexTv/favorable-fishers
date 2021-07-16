@@ -8,16 +8,10 @@ from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import sys
 
 
-
+# initialize the application
 def app(screen, scene):
-    scenes = [
-        #Scene([Dashboard(screen, apiManager)], -1, name="Dashboard"),
-       # Scene([Placeholder(screen, apiManager)], -1, name="APIWidget")
-	   Dashboard(screen, widgetmanager)
-    ]
-
-    screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True) 
-
+    dashboard = Dashboard(screen, widgetmanager)
+    screen.play([dashboard], stop_on_resize=True, start_scene=scene, allow_int=True) 
 
 
 widgetmanager = WidgetManager()
@@ -27,4 +21,5 @@ while True:
         Screen.wrapper(app, catch_interrupt=True, arguments=[last_scene])
         sys.exit(0)
     except ResizeScreenError as e:
+        pass
         last_scene = e.scene
