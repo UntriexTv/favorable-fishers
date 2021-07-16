@@ -14,7 +14,7 @@ class APIWidget():
 
 
     def getTile(self) -> Frame:
-        pass
+        return self.Tile
 
     def getDetailView(self) -> Frame:
         pass
@@ -26,3 +26,7 @@ class APIWidget():
 
     def setAPIparameters(self):
         pass
+
+    def move(self,x,y):
+        self.Tile._canvas._dx = x
+        self.Tile._canvas._dy = y
