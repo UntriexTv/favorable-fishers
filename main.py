@@ -1,14 +1,17 @@
-from asciimatics.screen import Screen
-from asciimatics.scene import Scene
-from WidgetManager import WidgetManager
-from Dashboard import Dashboard
-from APIWidgets.Placeholder import Placeholder
-
-from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import sys
 
+from WidgetManager import WidgetManager
+from Dashboard import Dashboard
 
-# initialize the application
+from asciimatics.screen import Screen
+from asciimatics.exceptions import ResizeScreenError
+
+
+"""
+The application is initialized using an asciimatics wrapper
+"""
+
+
 def app(screen, scene):
     dashboard = Dashboard(screen, widgetmanager)
     screen.play([dashboard], stop_on_resize=True, start_scene=scene, allow_int=True) 

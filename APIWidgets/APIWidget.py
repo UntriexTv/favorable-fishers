@@ -1,32 +1,22 @@
 from asciimatics.widgets import Frame
-import  APImanager 
-import json
 
 class APIWidget():
-    # self.tile = Frame()
-    # self.detailView = Frame()
-    # self.data = json
-
-    def __init__(self, api):
-        self.height = 15
-        self.width = 50
-        self.data = APImanager.callAPI("test")
-
-
-    def getTile(self) -> Frame:
-        return self.Tile
-
-    def getDetailView(self) -> Frame:
+    """
+    Interface that widgets must implement
+    """
+    def __init__(self, screen, height,width):
         pass
 
-    def refreshData(self):
-        self.data = APImanager.callAPI("test")
-        #update view
+    # defines the tile layout
+    def createTile(self,screen, height, width) -> Frame:
         pass
 
-    def setAPIparameters(self):
+    # TODO: not yet implemented in dashboard
+    def createDetailView(self) -> Frame:
         pass
 
-    def move(self,x,y):
-        self.Tile._canvas._dx = x
-        self.Tile._canvas._dy = y
+    def fetch_data(self):
+        pass
+
+    def setAPIparameters(self): 
+        pass

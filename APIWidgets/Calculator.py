@@ -1,6 +1,4 @@
-import threading
-import time
-
+from APIWidgets.APIWidget import APIWidget
 from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
     Button, TextBox, Widget, Label
 from asciimatics.scene import Scene
@@ -9,7 +7,9 @@ from asciimatics.screen import Screen
 from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import sys
 
-
+"""
+helper class to persist data
+"""
 class Data:
     def __init__(self):
         self.data = {}  # saved data
@@ -18,50 +18,40 @@ class Data:
     def save_data(self, data_place, data):
         self.data[data_place] = data
 
-    def new_update(self, data_: str, api: str):
-        self.data[data_] = "test"
-        self.update.append({"api": api, "data": data_})
-
-    def update_loop(self):  # is running in the background and downloading data from provided api
-        while True:
-            for req in self.update:
-                self.data[req["data"]] = requests.request("GET", req["api"])
-            time.sleep(0.5)
-
     def get_data(self, data_: str):
         try:
             return self.data[data_]
         except KeyError:
             return ""
 
+class calculator(APIWidget):
+    def __init__(self, screen, height,width):
+        self.cmd = Data()
+        self.Tile = self.createTile(screen, height, width)
 
-class testView(Frame):
-    def __init__(self, screen, height, width, comm, x1=0, y1=0):
-        super(testView, self).__init__(screen,
+        super(calculator,self).__init__(screen, height,width)
+
+    def createTile(self, screen, height, width):
+        tile = Frame(screen,
                                        height,
                                        width,
                                        hover_focus=True,
                                        can_scroll=False,
                                        title="Calculator",
-                                       reduce_cpu=False,
-                                       x=width * x1,
-                                       y=height * y1
+                                       reduce_cpu=True,
                                        )
-        # self.draw()
-        self.cmd = comm
-        #     self.calculator(5)
+        
 
-        #  def draw(self):
-        #  self.palette = {"attribute":(1,2,3)}
         # Create the form for displaying the list of contacts.
         self.cmd.save_data("commands", "")
+        tile.data = {"commands": self.cmd.get_data("commands")}
         self.layout_result = Layout([2])
-        self.add_layout(self.layout_result)
+        tile.add_layout(self.layout_result)
         self.layout_result.add_widget(Text("Command: ", name="commands", validator=self.validateCommand))
         self.layout_result.add_widget(Text("Result: ", name="result", readonly=True))
-
+        
         layout = Layout([5, 5, 5, 5], fill_frame=True)
-        self.add_layout(layout)
+        tile.add_layout(layout)
         layout.add_widget(Button(" ( ", self.calculator, "("), 0)
         layout.add_widget(Button(" ) ", self.calculator, ")"), 1)
         layout.add_widget(Button("DEL", self.calculator, "b"), 2)
@@ -81,10 +71,8 @@ class testView(Frame):
         layout.add_widget(Button(" 0 ", self.calculator, "0"), 1)
         layout.add_widget(Button(" . ", self.calculator, "."), 2)
         layout.add_widget(Button(" + ", self.calculator, "+"), 3)
-        layout2 = Layout([1, 1, 1, 1, 1])
-        self.add_layout(layout2)
-        layout2.add_widget(Button("Quit", self._quit, None), 3)
-        self.fix()
+        tile.fix()
+        return tile
 
     def validateCommand(self, data):
         test = ''.join("" if c.isdigit() or c in ["/", "*", "-", "+", ".", "(", ")"] else c for c in data)
@@ -93,55 +81,28 @@ class testView(Frame):
         else:
             return False
         if data:
-            self.reset()
+            self.checkResult()
         return True
 
-    def _update(self, frame_no):
-        super(testView, self)._update(frame_no)
-
-    def reset(self):
-        self.data = {"commands": self.cmd.get_data("commands")}
+    def checkResult(self):
+        self.Tile.data = {"commands": self.cmd.get_data("commands")}
         try:
-            exec(f"""self.data["result"] = str({self.data["commands"]})""")
+            exec(f"""self.data["result"] = str({self.Tile.data["commands"]})""")
         except:
-            self.data["result"] = ""
+            self.Tile.data["result"] = ""
 
     def calculator(self, new=None):
+        if not "commands" in self.Tile.data:
+            self.Tile.data = {"commands":""}
         if new == "b":
-            self.data["commands"] = self.data["commands"][:-1]
+            self.Tile.data["commands"] = self.Tile.data["commands"][:-1]
         elif new =="c":
-            self.data["commands"] = ""
+            self.Tile.data["commands"] = ""
         else:
-            self.data["commands"] += new
+            self.Tile.data["commands"] += new
         try:
-            self.cmd.save_data("commands", self.data["commands"])
+            self.cmd.save_data("commands", self.Tile.data["commands"])
         except KeyError:
             self.cmd.save_data("commands", new)
-        self.reset()
-
-    @staticmethod
-    def _quit():
-        raise StopApplication("User pressed quit")
-
-
-cmd = Data()
-t1 = threading.Thread(target=cmd.update_loop, daemon=True)
-t1.start()
-
-
-def demo(screen, scene):
-    height = screen.height  # // 2
-    width = screen.width  # // 2
-    cmd.__init__()
-    scenes = [Scene([testView(screen, height, width, cmd)], -1, name="Main"), ]
-
-    screen.play(scenes, stop_on_resize=True, start_scene=scenes[0], allow_int=True)
-
-
-last_scene = None
-while True:
-    try:
-        Screen.wrapper(demo, catch_interrupt=True, arguments=[last_scene])
-        sys.exit(0)
-    except ResizeScreenError as e:
-        last_scene = e.scene
+        self.Tile.save()
+        self.Tile.reset()

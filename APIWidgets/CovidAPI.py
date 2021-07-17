@@ -9,57 +9,77 @@ import json
 
 
 class covidView(APIWidget):
-    def __init__(self, screen, height=15, width=50, x=0, y=0, can_scroll=False):
-        super(covidView, self).__init__("")
+    def __init__(self, screen, height, width):
+        super(covidView, self).__init__(screen, height, width)
         self.needs_refresh = False
         self.settings_open = False
+        self.data = {"country":"united-kingdom"}
         self.Tile = self.createTile(screen, height, width)
-
+        self.screen = screen
 
 
     def createTile(self, screen, height, width):
-        fr = Frame(screen, height, width, can_scroll=False)
+        tile = Frame(screen, height, width, title="CovidAPI",can_scroll=False)
         # create the layout
         layout = Layout([100], fill_frame=True)
-        fr.add_layout(layout)
-        self.json_data = self.fetch_data()
+        tile.add_layout(layout)
+        if not "Country" in tile.data:
+            tile.data =self.fetch_data()
+        #self.json_data = tile.data["covid"]
 
         # add all the labels
-        layout.add_widget(Label('Country:   ' + str(self.json_data['Country'])))
-        layout.add_widget(Label('Confirmed: ' + str(self.json_data['Confirmed'])))
-        layout.add_widget(Label('Deaths:    ' + str(self.json_data['Deaths'])))
-        layout.add_widget(Label('Recovered: ' + str(self.json_data['Recovered'])))
-        layout.add_widget(Label('Active:    ' + str(self.json_data['Active'])))
-        layout.add_widget(Label('Date:      ' + str(self.json_data['Date'])))
+        layout.add_widget(Text('Country:   ' , name="Country", readonly=True))
+        layout.add_widget(Text('Confirmed: ' , name="Confirmed", readonly=True))
+        layout.add_widget(Text('Deaths:    ' , name='Deaths', readonly=True))
+        layout.add_widget(Text('Recovered: ' , name='Recovered', readonly=True))
+        layout.add_widget(Text('Active:    ' , name='Active', readonly=True))
+        layout.add_widget(Text('Date:      ' , name='Date', readonly=True))
 
-        if self.settings_open == True:
-            layout.add_widget(Text('Country:', 'country'))
 
         # creating the bottom bar of widgets
-        buttonBar = Layout([1, 1,1,1])
-        fr.add_layout(buttonBar)
-        buttonBar.add_widget(Button('Config', self._config, None), 1)
-        buttonBar.add_widget(Button('Quit', self._quit, None), 3)
-        fr.fix()
-        return fr
+        buttonBar = Layout([1, 1,1])
+        tile.add_layout(buttonBar)
+        button =Button('Config', self._config, None)
+        buttonBar.add_widget(button, 1)
+        tile.fix()
+        return tile
 
-    @staticmethod
-    def _quit():
-        raise StopApplication('User pressed quit')
 
     def _config(self):
-        if self.settings_open == True:
-            self.settings_open = False
-        else:
-            self.settings_open = True
+        courtyList = [("United Kingdom","united-kingdom"),("Denmark","denmark"),("Germany","germany")]
+        self._widget_list_view = ListBox(
+            Widget.FILL_FRAME,
+            courtyList,
+            name="country",
+            add_scroll_bar=True,
+            on_select=self._alter_nation)#_addAPIWidget)
+
+        self.menuFrame = Frame(self.screen,10,20)
+        layout = Layout([1], fill_frame=True)
+        self.menuFrame.add_layout(layout)
+        layout.add_widget(self._widget_list_view)
+        layout.add_widget(Divider())
+        #send menuframe to dashboard
+        self.screen._scenes[0].open_menu(self.menuFrame)
+
+    def _alter_nation(self):
+        self.screen._scenes[0]._cancel()
+        self.menuFrame.save()
+        self.data["country"] = self.menuFrame.data["country"]
+        self.Tile.data = self.fetch_data()
+        self.Tile.save()
+        self.Tile.reset()
 
 
     def fetch_data(self):
         # getting the json data from the covid api and return the latest data point
-        url = 'https://api.covid19api.com/live/country/united-kingdom/status/confirmed'
+        url = f'https://api.covid19api.com/live/country/{self.data["country"]}/status/confirmed'
         payload = {}
         headers = {}
         response = requests.request('GET', url, headers=headers, data=payload)
-        data = response.json()
+        data = response.json()[-1]
 
-        return data[len(data)-1]
+        retVal = {}
+        for k,v in data.items():
+            retVal[k] = str(v)
+        return retVal 

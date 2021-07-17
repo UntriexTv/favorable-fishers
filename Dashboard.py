@@ -1,5 +1,4 @@
 
-from testwid import testView
 from APIWidgets.BoredAPI import BoredAPI
 from asciimatics.effects import Background
 from asciimatics.exceptions import StopApplication
@@ -26,7 +25,7 @@ class Dashboard(Scene):
             self.displayDashboard()
 
 
-    # open widget menu
+    # create widget menu
     def _add_widget(self):
 
         self._widget_list_view = ListBox(
@@ -34,21 +33,23 @@ class Dashboard(Scene):
             self.widgetmanager.getWidgetMenu(),
             name="WidgetList",
             add_scroll_bar=True,
-          #  on_change=self._on_pick,
             on_select=self._on_select)#_addAPIWidget)
 
-        self.menuFrame = Frame(self.screen,20,20)
+        self.menuFrame = Frame(self.screen,10,20)
         layout = Layout([1], fill_frame=True)
         self.menuFrame.add_layout(layout)
         layout.add_widget(self._widget_list_view)
         layout.add_widget(Divider())
+        self.open_menu(self.menuFrame)
 
+    #open menu
+    def open_menu(self, menu:Frame):
         closeMenuBtn = Layout([1])
-        self.menuFrame.add_layout(closeMenuBtn)
+        menu.add_layout(closeMenuBtn)
         closeMenuBtn.add_widget(Button("Cancel", self._cancel,None))
-        self.menuFrame.fix()
+        menu.fix()
 
-        self.add_effect(self.menuFrame)
+        self.add_effect(menu)
 
 
     @staticmethod
@@ -69,7 +70,7 @@ class Dashboard(Scene):
         padding = (remaining_space // (tilesPerRow+1))
         x_pos = tileIndex % tilesPerRow
         y_pos = tileIndex // tilesPerRow
-        tile._canvas._dx = x_pos * TILE_WIDTH + (padding * (x_pos+1))# + middeling //2
+        tile._canvas._dx = x_pos * TILE_WIDTH + (padding * (x_pos+1))
         tile._canvas._dy = ( y_pos * TILE_HEIGHT ) + TOOLBAR_OFFSET + (y_pos+1)
         self.add_effect(tile)
 
@@ -84,7 +85,7 @@ class Dashboard(Scene):
         self._cancel()
         self.menuFrame.save()
         widgetID = self.menuFrame.data["WidgetList"]
-        newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen)
+        newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen, TILE_HEIGHT, TILE_WIDTH)
         tile = self.widgetmanager.getTile(newtileIndex)
         self.placeTile(tile, newtileIndex)
 
