@@ -9,7 +9,7 @@ from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
 class CryptoAPI(APIWidget):
     def __init__(self, screen, height,width):
         self.url = "https://api.coindesk.com/v1/bpi/currentprice.json" 
-
+        self.id = 2
         self.Tile = self.createTile(screen, height, width)
         self.fetch_data()
        # self.detailView = self.createDetailView()
@@ -39,7 +39,7 @@ class CryptoAPI(APIWidget):
  
 
     # TODO: not yet implemented in dashboard
-    def createDetailView(self):
+    def create_detail_view(self):
         pass
 
     # get api data

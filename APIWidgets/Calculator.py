@@ -28,7 +28,7 @@ class calculator(APIWidget):
     def __init__(self, screen, height,width):
         self.cmd = Data()
         self.Tile = self.createTile(screen, height, width)
-
+        self.id = 4
         super(calculator,self).__init__(screen, height,width)
 
     def createTile(self, screen, height, width):

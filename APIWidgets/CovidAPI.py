@@ -16,6 +16,7 @@ class covidView(APIWidget):
         self.data = {"country":"united-kingdom"}
         self.Tile = self.createTile(screen, height, width)
         self.screen = screen
+        self.id = 1
 
 
     def createTile(self, screen, height, width):

@@ -38,9 +38,12 @@ class WidgetManager:
     def getDashboard(self):
         return [widget.Tile for widget in self.widgets ]
 
+    def get_widget_ids(self):
+        return [widget.id for widget in self.widgets ]
+
     # add new widget
     def addAPIWidget(self, widgetID, screen, height,width):
-
+        fr = None
         if widgetID == 0:
             fr = BoredAPI(screen, height,width)
         elif widgetID ==1:
@@ -49,14 +52,14 @@ class WidgetManager:
             fr = CryptoAPI(screen, height,width)
         elif widgetID ==3:
             fr = JokeAPI(screen, height,width)
-        else:
+        elif widgetID ==4:
             fr = calculator(screen, height,width)
-        #fr = testView(screen,15,50)
-        self.widgets.append(fr)
-        
-        # fr = testView(screen,15,50,len(self.widgets))
-        # self.widgets.append(fr)
-        return len(self.widgets)-1
+
+        if fr is not None:
+            self.widgets.append(fr)
+            return len(self.widgets)-1
+        else:
+            return None
 
     # TODO: removes widget, not called by anything
     def delAPIWidget(self, index):

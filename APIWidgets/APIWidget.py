@@ -12,11 +12,11 @@ class APIWidget():
         pass
 
     # TODO: not yet implemented in dashboard
-    def createDetailView(self) -> Frame:
+    def create_detail_view(self) -> Frame:
         pass
 
     def fetch_data(self):
         pass
 
-    def setAPIparameters(self): 
+    def set_API_parameters(self): 
         pass

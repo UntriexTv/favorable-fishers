@@ -9,7 +9,7 @@ from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
 class JokeAPI(APIWidget):
     def __init__(self, screen, height,width):
         self.url = "https://official-joke-api.appspot.com/random_joke" 
-
+        self.id = 3
         self.Tile = self.createTile(screen, height, width)
         self.fetch_data()
        # self.detailView = self.createDetailView()
@@ -24,6 +24,9 @@ class JokeAPI(APIWidget):
         tile.add_layout(layout)
         layout.add_widget(Label("", align="^"))
         layout.add_widget(Text("",name="setup", readonly=True))
+        layout.add_widget(Label("", align="^"))
+        layout.add_widget(Label("", align="^"))
+        layout.add_widget(Label("", align="^"))
         layout.add_widget(Label("", align="^"))
         layout.add_widget(Text("",name="punchline", readonly=True))
         layout.add_widget(Label("", align="^"))

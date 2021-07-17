@@ -56,6 +56,28 @@ class Dashboard(Scene):
     def _quit():
         raise StopApplication("User pressed quit")
 
+    def _save_setup(self):
+        try:
+            widget_ids = self.widgetmanager.get_widget_ids()
+            with open('widget_dashboard.csv', 'w' ) as writer:
+                writer.writelines([str(id)+'\n' for id in widget_ids])
+        except:
+            pass
+
+    def _load_setup(self):
+        try:
+            widget_ids = []
+            with open('widget_dashboard.csv', 'r' ) as reader:
+                widget_ids = reader.read().splitlines()
+            for type in widget_ids:
+                newtileIndex = self.widgetmanager.addAPIWidget(int(type), self.screen, TILE_HEIGHT, TILE_WIDTH)
+                tile = self.widgetmanager.getTile(newtileIndex)
+                self.placeTile(tile, newtileIndex)
+        except:
+        # if it does not exist, do nothing
+            pass
+
+
     # get and place all tiles on dashboard
     def displayDashboard(self):
         allTiles = self.widgetmanager.getDashboard()
@@ -86,17 +108,20 @@ class Dashboard(Scene):
         self.menuFrame.save()
         widgetID = self.menuFrame.data["WidgetList"]
         newtileIndex = self.widgetmanager.addAPIWidget(widgetID, self.screen, TILE_HEIGHT, TILE_WIDTH)
-        tile = self.widgetmanager.getTile(newtileIndex)
-        self.placeTile(tile, newtileIndex)
+        if newtileIndex is not None:
+            tile = self.widgetmanager.getTile(newtileIndex)
+            self.placeTile(tile, newtileIndex)
 
 
     # create menu
     def generateInterface(self):
         interface = Frame(self.screen, TOOLBAR_OFFSET,self.screen.width,x=0,y=0)
-        layout = Layout([1,1])
+        layout = Layout([1,1,1,1])
         interface.add_layout(layout)
         layout.add_widget(Button("Add Widget",self._add_widget,None),0)
-        layout.add_widget(Button("Quit",self._quit,None),1)
+        layout.add_widget(Button("Save Layout",self._save_setup,None),1)
+        layout.add_widget(Button("Load Layout",self._load_setup,None),2)
+        layout.add_widget(Button("Quit",self._quit,None),3)
         interface.fix()
 
         return [Background(self.screen),interface]

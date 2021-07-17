@@ -8,7 +8,7 @@ from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
 class BoredAPI(APIWidget):
     def __init__(self, screen, height,width):
         self.url = "https://www.boredapi.com/api/activity" 
-
+        self.id = 0
         self.Tile = self.createTile(screen, height, width)
         self.fetch_data()
        # self.detailView = self.createDetailView()
@@ -39,7 +39,7 @@ class BoredAPI(APIWidget):
  
 
     # TODO: not yet implemented in dashboard
-    def createDetailView(self):
+    def create_detail_view(self):
         pass
 
     # get api data
