@@ -2,7 +2,7 @@
 
 An application to complement your everyday life, displaying useful information around the clock.
 Video demonstrating the project:
-![Dashboard TUI app](https://youtu.be/le_tm3CKcSY)
+[Dashboard TUI app](https://youtu.be/le_tm3CKcSY)
 
 ## Installation Instructions
 Install asciimatics. 
