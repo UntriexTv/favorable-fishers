@@ -10,15 +10,10 @@ Install asciimatics.
 pip install asciimatics
 ```
 
-Go to `file path here within the asciimatics module`  and open the file `fill in file name here` go to line `` and change the line to:
-
-```python
-print(hello)
-```
-
 To run the application execute `main.py` within the terminal of your choice.
+
 ## Overview
 Within this application you are able to:
 - add and remove widgets 
-- save and create layouts of widgets
+- save and create and load layouts of widgets
 - configure widgets to your desire
